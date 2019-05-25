@@ -21,8 +21,8 @@
           ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
      -->
     </properties>
-    <name>TODO Plugin</name>
-    <description>TODO</description>
+    <name>GitLab Branch Source Plugin</name>
+    <description>A Jenkins plugin for GitLab multibranch pipeline support</description>
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
     <licenses>
         <license>

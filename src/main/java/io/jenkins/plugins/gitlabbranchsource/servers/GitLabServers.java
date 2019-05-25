@@ -52,7 +52,6 @@ public class GitLabServers extends GlobalConfiguration {
         return ExtensionList.lookup(GlobalConfiguration.class).get(GitLabServers.class);
     }
 
-
     /**
      * Fix a serverUrl.
      *
@@ -218,7 +217,7 @@ public class GitLabServers extends GlobalConfiguration {
      */
 
     public synchronized void setServers(@CheckForNull List<? extends GitLabServer> servers) {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
         List<GitLabServer> eps = new ArrayList<>(Util.fixNull(servers));
         // remove duplicates and empty urls
         Set<String> serverUrls = new HashSet<String>();

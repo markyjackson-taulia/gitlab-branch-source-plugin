@@ -5,6 +5,7 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Util;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
@@ -20,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -84,8 +86,8 @@ public class GitLabServer extends AbstractDescribableImpl<GitLabServer> {
     private final String credentialsId;
 
     /**
-     * The {@link #serverUrl} that Gitea thinks it is served at, if different from the URL that Jenkins needs to use to
-     * access Gitea.
+     * The {@link #serverUrl} that GitLab thinks it is served at, if different from the URL that Jenkins needs to use to
+     * access GitLab.
      *
      * @since 1.0.5
      */
@@ -140,6 +142,24 @@ public class GitLabServer extends AbstractDescribableImpl<GitLabServer> {
     public String getAliasUrl() {
         return aliasUrl;
     }
+
+    /**
+     * Constructor
+     *
+     * @param displayName   Optional name to use to describe the end-point.
+     * @param serverUrl     The URL of this GitLab Server
+     * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
+     * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
+     *                      auto-management of hooks.
+     * @deprecated Use {@link #GitLabServer(String, String, boolean, String, String)}
+     */
+    @Deprecated
+    @Restricted(DoNotUse.class)
+    public GitLabServer(@edu.umd.cs.findbugs.annotations.CheckForNull String displayName, @NonNull String serverUrl, boolean manageHooks,
+                       @edu.umd.cs.findbugs.annotations.CheckForNull String credentialsId) {
+        this(displayName, serverUrl, manageHooks, credentialsId, null);
+    }
+
 
     /**
      * Constructor
