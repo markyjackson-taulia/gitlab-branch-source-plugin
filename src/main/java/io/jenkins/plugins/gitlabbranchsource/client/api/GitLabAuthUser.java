@@ -1,4 +1,4 @@
-package io.jenkins.plugins.gitlabbranchsource.api.client;
+package io.jenkins.plugins.gitlabbranchsource.client.api;
 
 /**
  * Represents username/password authentication to the Gitlab API

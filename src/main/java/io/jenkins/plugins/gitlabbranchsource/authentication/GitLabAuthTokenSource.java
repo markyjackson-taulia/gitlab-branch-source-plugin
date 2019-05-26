@@ -1,11 +1,11 @@
 package io.jenkins.plugins.gitlabbranchsource.authentication;
 
-import io.jenkins.plugins.gitlabbranchsource.api.client.GitLabAuthToken;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import io.jenkins.plugins.gitlabbranchsource.client.api.GitLabAuthToken;
 import io.jenkins.plugins.gitlabbranchsource.credentials.PersonalAccessToken;
 import jenkins.authentication.tokens.api.AuthenticationTokenException;
 import jenkins.authentication.tokens.api.AuthenticationTokenSource;
 
-import javax.annotation.Nonnull;
 
 public class GitLabAuthTokenSource extends AuthenticationTokenSource<GitLabAuthToken, PersonalAccessToken> {
     /**
@@ -18,9 +18,9 @@ public class GitLabAuthTokenSource extends AuthenticationTokenSource<GitLabAuthT
     /**
      * {@inheritDoc}
      */
-    @Nonnull
+    @NonNull
     @Override
-    public GitLabAuthToken convert(@Nonnull PersonalAccessToken credential) throws AuthenticationTokenException {
+    public GitLabAuthToken convert(@NonNull PersonalAccessToken credential) throws AuthenticationTokenException {
         return new GitLabAuthToken(credential.getToken().getPlainText());
     }
 }

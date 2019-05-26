@@ -7,14 +7,10 @@
     <f:entry title="${%Server URL}" field="serverUrl">
         <f:textbox/>
     </f:entry>
-    <f:optionalBlock title="${%Manage hooks}" field="manageHooks" inline="true">
-        <f:entry field="credentialsId" title="${%Credentials}">
-            <c:select context="${app}"/>
-        </f:entry>
-    </f:optionalBlock>
-    <f:advanced>
-        <f:entry title="${%Alias URL}" field="aliasUrl">
-            <f:textbox/>
-        </f:entry>
-    </f:advanced>
+    <f:entry title="${%Credentials}" field="credentialsId" >
+        <c:select context="${app}"/>
+    </f:entry>
+    <f:entry title="${%Manage hooks}" field="manageHooks" >
+        <f:checkbox  default="false"/>
+    </f:entry>
 </j:jelly>

@@ -5,15 +5,14 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
-import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Util;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import io.jenkins.plugins.gitlabbranchsource.api.client.GitLabAuth;
-import io.jenkins.plugins.gitlabbranchsource.api.client.GitLabAuthToken;
+import io.jenkins.plugins.gitlabbranchsource.client.api.GitLabAuth;
+import io.jenkins.plugins.gitlabbranchsource.client.api.GitLabAuthToken;
 import jenkins.authentication.tokens.api.AuthenticationTokens;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMName;
@@ -21,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.DoNotUse;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -29,8 +27,6 @@ import org.kohsuke.stapler.QueryParameter;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
@@ -85,14 +81,6 @@ public class GitLabServer extends AbstractDescribableImpl<GitLabServer> {
     @CheckForNull
     private final String credentialsId;
 
-    /**
-     * The {@link #serverUrl} that GitLab thinks it is served at, if different from the URL that Jenkins needs to use to
-     * access GitLab.
-     *
-     * @since 1.0.5
-     */
-    @CheckForNull
-    private final String aliasUrl;
 
     /**
      * {@inheritDoc}
@@ -138,10 +126,6 @@ public class GitLabServer extends AbstractDescribableImpl<GitLabServer> {
      * @return the {@link #getServerUrl()} that the GitLab server believes it has when publishing webhook events or
      * {@code null}
      */
-    @CheckForNull
-    public String getAliasUrl() {
-        return aliasUrl;
-    }
 
     /**
      * Constructor
@@ -151,39 +135,18 @@ public class GitLabServer extends AbstractDescribableImpl<GitLabServer> {
      * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
      * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
      *                      auto-management of hooks.
-     * @deprecated Use {@link #GitLabServer(String, String, boolean, String, String)}
-     */
-    @Deprecated
-    @Restricted(DoNotUse.class)
-    public GitLabServer(@edu.umd.cs.findbugs.annotations.CheckForNull String displayName, @NonNull String serverUrl, boolean manageHooks,
-                       @edu.umd.cs.findbugs.annotations.CheckForNull String credentialsId) {
-        this(displayName, serverUrl, manageHooks, credentialsId, null);
-    }
-
-
-    /**
-     * Constructor
-     *
-     * @param displayName   Optional name to use to describe the end-point.
-     * @param serverUrl     The URL of this GitLab Server
-     * @param manageHooks   {@code true} if and only if Jenkins is supposed to auto-manage hooks for this end-point.
-     * @param credentialsId The {@link StandardUsernamePasswordCredentials#getId()} of the credentials to use for
-     *                      auto-management of hooks.
-     * @param aliasUrl      The URL this GitLab Server thinks it is at.
      * @since 1.0.5
      */
     @DataBoundConstructor
     public GitLabServer(@CheckForNull String displayName, @Nonnull String serverUrl, boolean manageHooks,
-                       @CheckForNull String credentialsId, @CheckForNull String aliasUrl) {
-        this.manageHooks = manageHooks && StringUtils.isNotBlank(credentialsId);
-        this.credentialsId = manageHooks ? credentialsId : null;
+                       @CheckForNull String credentialsId) {
+        this.manageHooks = manageHooks;
+        this.credentialsId = credentialsId;
         this.serverUrl = defaultIfBlank(serverUrl, GITLAB_SERVER_URL);
         this.displayName = StringUtils.isBlank(displayName)
                 ? SCMName.fromUrl(this.serverUrl, COMMON_PREFIX_HOSTNAMES)
                 : displayName;
-        this.aliasUrl = StringUtils.trimToNull(GitLabServers.normalizeServerUrl(aliasUrl));
     }
-
 
     /**
      * Looks up the {@link StandardCredentials} to use for auto-management of hooks.
@@ -252,24 +215,6 @@ public class GitLabServer extends AbstractDescribableImpl<GitLabServer> {
                     "Community self hosted etc are not supported, use only https://gitlab.com endpoint");
         }
     }
-
-    /**
-     * Checks that the supplied URL is valid.
-     *
-     * @param value the URL to check.
-     * @return the validation results.
-     */
-    public static FormValidation doCheckAliasUrl(@QueryParameter String value) {
-        Jenkins.getActiveInstance().checkPermission(Jenkins.ADMINISTER);
-        if (StringUtils.isBlank(value)) return FormValidation.ok();
-        try {
-            new URI(value);
-            return FormValidation.ok();
-        } catch (URISyntaxException e) {
-            return FormValidation.errorWithMarkup(Messages.GitLabServer_invalidUrl(Util.escape(e.getMessage())));
-        }
-    }
-
 
     /**
      * Stapler form completion.
