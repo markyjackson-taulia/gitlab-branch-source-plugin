@@ -67,30 +67,6 @@ public class PersonalAccessTokenImpl extends BaseStandardCredentials implements 
         public String getDisplayName() {
             return Messages.PersonalAccessTokenImpl_displayName();
         }
-
-        /**
-         * Sanity check for a Gitlab access token.
-         *
-         * @param value the token.
-         * @return the results of the sanity check.
-         */
-        @Restricted(NoExternalUse.class)
-        @SuppressWarnings("unused")
-        public FormValidation doCheckToken(@QueryParameter String value) {
-            Secret secret = Secret.fromString(value);
-//            if(secret == null) {
-//                return FormValidation.error(Messages.PersonalAccessTokenImpl_tokenRequired());
-//            }
-            if(StringUtils.equals(value, secret.getPlainText())) {
-                if (value.length() != 20) {// length of GitLab Access Token is 20
-                    return FormValidation.error(Messages.PersonalAccessTokenImpl_tokenWrongLength());
-                }
-            } else if (secret.getPlainText().length() != 20) {
-                return FormValidation.warning(Messages.PersonalAccessTokenImpl_tokenWrongLength());
-            }
-            return FormValidation.ok();
-        }
-
     }
 
 }

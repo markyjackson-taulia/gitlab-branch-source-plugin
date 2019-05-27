@@ -25,11 +25,11 @@ public class GitLabAuthSourceTest {
     public void given__tokenCredential__when__convert__then__tokenAuth() throws Exception {
         // we use a mock to ensure that java.lang.reflect.Proxy implementations of the credential interface work
         PersonalAccessToken personalAccessToken = Mockito.mock(PersonalAccessToken.class);
-        Mockito.when(personalAccessToken.getToken()).thenReturn(Secret.fromString("sAfbXasnou47yxoAsCax"));
+        Mockito.when(personalAccessToken.getToken()).thenReturn(Secret.fromString("sAf_Xasnou47yxoAsC"));
         GitLabAuth gitLabAuth = AuthenticationTokens.convert(GitLabAuth.class, personalAccessToken);
 
         assertThat(gitLabAuth, instanceOf(GitLabAuthToken.class));
-        assertThat(((GitLabAuthToken)gitLabAuth).getToken(), is("sAfbXasnou47yxoAsCax"));
+        assertThat(((GitLabAuthToken)gitLabAuth).getToken(), is("sAf_Xasnou47yxoAsC"));
     }
 
     @Test
